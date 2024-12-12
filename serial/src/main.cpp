@@ -59,36 +59,58 @@ int main(int argc, char* argv[]){
 
     SF_INFO fileInfo, BP_fileInfo, N_fileInfo, FIR_fileInfo, IRR_fileInfo;
     std::vector<float> audioData;
-    std::vector<float> BP_filteredData, N_filteredData, IRR_filteredData, FIR_filteredData;
 
-    Timer read_timer, execution_timer;
-    double read_duration, execution_duration;
+    Timer timer, execution_timer;
+    double read_duration, write_duration, execution_duration, BP_duration, N_duration, FIR_duration, IIR_duration;
 
     std::memset(&fileInfo, 0, sizeof(fileInfo));
 
     execution_timer.start();
-    read_timer.start();
+
+    timer.start();
     readWavFile(inputFile, audioData, fileInfo);
     BP_fileInfo = fileInfo;
     N_fileInfo = fileInfo;
     FIR_fileInfo = fileInfo;
     IRR_fileInfo = fileInfo;
-    read_duration = read_timer.stop();
-    std::cout << "Read: " << read_duration << " ms" << std::endl;
+    read_duration = timer.stop();
 
-    applyFilter("Band-pass Filter", audioData, BP_filteredData);
-    writeWavFile(BP_outputFile, BP_filteredData, BP_fileInfo);
+    std::vector<float> BP_filteredData(audioData.size(), 0.0f);
+    std::vector<float> N_filteredData(audioData.size(), 0.0f);
+    std::vector<float> IRR_filteredData(audioData.size(), 0.0f);
+    std::vector<float> FIR_filteredData(audioData.size(), 0.0f);
+
+    timer.start();
+    band_pass_filter(audioData, BP_filteredData);
+    BP_duration = timer.stop();
     
-    applyFilter("Notch Filter", audioData, N_filteredData);
+    timer.start();
+    notch_filter(audioData, N_filteredData);
+    N_duration = timer.stop();
+
+    timer.start();
+    FIR_filter(audioData, IRR_filteredData);
+    FIR_duration = timer.stop();
+
+    timer.start();
+    IIR_filter(audioData, FIR_filteredData);
+    IIR_duration = timer.stop();
+
+    timer.start();
+    writeWavFile(BP_outputFile, BP_filteredData, BP_fileInfo);
     writeWavFile(N_outputFile, N_filteredData, N_fileInfo);
-
-    applyFilter("FIR Filter", audioData, FIR_filteredData);
     writeWavFile(FIR_outputFile, FIR_filteredData, FIR_fileInfo);
-
-    applyFilter("IRR Filter", audioData, IRR_filteredData);
     writeWavFile(IRR_outputFile, IRR_filteredData, IRR_fileInfo);
+    write_duration = timer.stop();
 
     execution_duration = execution_timer.stop();
+
+    std::cout << "Read: " << read_duration << " ms" << std::endl;
+    std::cout << "write: " << write_duration << " ms" << std::endl;
+    std::cout << "Band-pass Filter" << ": " << BP_duration << " ms" << std::endl;
+    std::cout << "Notch Filter" << ": " << N_duration << " ms" << std::endl;
+    std::cout << "FIR Filter" << ": " << FIR_duration << " ms" << std::endl;
+    std::cout << "IRR Filter" << ": " << IIR_duration << " ms" << std::endl;
     std::cout << "Execution: " << execution_duration << " ms" << std::endl;
     
     return 0;

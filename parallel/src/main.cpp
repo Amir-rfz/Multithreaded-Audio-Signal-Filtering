@@ -65,13 +65,14 @@ int main(int argc, char* argv[]){
     std::vector<float> audioData;
 
     Timer timer, execution_timer;
-    double read_duration, execution_duration, BP_duration, N_duration, FIR_duration, IIR_duration;
+    double read_duration, write_duration, execution_duration, BP_duration, N_duration, FIR_duration, IIR_duration;
 
 
     std::memset(&fileInfo, 0, sizeof(fileInfo));
 
     execution_timer.start();
     timer.start();
+    
     readWavFile(inputFile, audioData, fileInfo);
     BP_fileInfo = fileInfo;
     N_fileInfo = fileInfo;
@@ -92,26 +93,30 @@ int main(int argc, char* argv[]){
     timer.start();
     create_threads(band_pass_filter ,audioData, BP_filteredData, ready_flags);
     BP_duration = timer.stop();
-    writeWavFile(BP_outputFile, BP_filteredData, BP_fileInfo);
     
     timer.start();
     create_threads(notch_filter ,audioData, N_filteredData, ready_flags);
     N_duration = timer.stop();
-    writeWavFile(N_outputFile, N_filteredData, N_fileInfo);
 
     timer.start();
     create_threads(FIR_filter ,audioData, FIR_filteredData, ready_flags);
     FIR_duration = timer.stop();
-    writeWavFile(FIR_outputFile, FIR_filteredData, FIR_fileInfo);
 
     timer.start();
     create_threads(IIR_filter ,audioData, IRR_filteredData, ready_flags);
     IIR_duration = timer.stop();
+
+    timer.start();
+    writeWavFile(BP_outputFile, BP_filteredData, BP_fileInfo);
+    writeWavFile(N_outputFile, N_filteredData, N_fileInfo);
+    writeWavFile(FIR_outputFile, FIR_filteredData, FIR_fileInfo);
     writeWavFile(IRR_outputFile, IRR_filteredData, IRR_fileInfo);
+    write_duration = timer.stop();
 
     execution_duration = execution_timer.stop();
 
     std::cout << "Read: " << read_duration << " ms" << std::endl;
+    std::cout << "write: " << write_duration << " ms" << std::endl;
     std::cout << "Band-pass Filter" << ": " << BP_duration << " ms" << std::endl;
     std::cout << "Notch Filter" << ": " << N_duration << " ms" << std::endl;
     std::cout << "FIR Filter" << ": " << FIR_duration << " ms" << std::endl;
