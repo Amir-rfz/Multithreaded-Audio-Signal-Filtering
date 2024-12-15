@@ -1,0 +1,17 @@
+Successfully read 1323000 frames from assets/input.wav
+Successfully wrote 1323000 frames to res/BP_filter.wav
+Successfully wrote 1323000 frames to res/N_filter.wav
+Successfully wrote 1323000 frames to res/FIR_filter.wav
+Successfully wrote 1323000 frames to res/IRR_filter.wav
+Read: 4.87037 ms
+write: 56.721 ms
+Band-pass Filter: 2.39033 ms
+Notch Filter: 10.8917 ms
+FIR Filter: 38.3202 ms
+IRR Filter: 140.499 ms
+Execution: 265.83 ms
+sum of input Data :-2520.55
+sum of BP filtered Data :-177.714
+sum of N filtered Data :1.323e+06
+sum of FIR filtered Data :-3181.38
+sum of IRR filtered Data :-6704.7

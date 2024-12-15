@@ -44,6 +44,14 @@ void writeWavFile(const std::string& outputFile, const std::vector<float>& data,
     std::cout << "Successfully wrote " << numFrames << " frames to " << outputFile << std::endl;
 }
 
+float sumVector(const std::vector<float>& values) {
+    float sum = 0.0f;
+    for (float value : values) {
+        sum += value;
+    }
+    return sum;
+}
+
 int main(int argc, char* argv[]){
     if (argc < 2){
         std::cerr << "Usage: " << argv[0] << " <input WAV file>" << std::endl;
@@ -89,11 +97,11 @@ int main(int argc, char* argv[]){
     N_duration = timer.stop();
 
     timer.start();
-    FIR_filter(audioData, IRR_filteredData);
+    FIR_filter(audioData, FIR_filteredData);
     FIR_duration = timer.stop();
 
     timer.start();
-    IIR_filter(audioData, FIR_filteredData);
+    IIR_filter(audioData, IRR_filteredData);
     IIR_duration = timer.stop();
 
     timer.start();
@@ -112,6 +120,14 @@ int main(int argc, char* argv[]){
     std::cout << "FIR Filter" << ": " << FIR_duration << " ms" << std::endl;
     std::cout << "IRR Filter" << ": " << IIR_duration << " ms" << std::endl;
     std::cout << "Execution: " << execution_duration << " ms" << std::endl;
+
+    // UNCOMMENT IF YOU WANT TO CHECK THE VALID OUTPUT
+
+    // std::cout << "sum of input Data :" << sumVector(audioData) << std::endl;
+    // std::cout << "sum of BP filtered Data :" << sumVector(BP_filteredData) << std::endl;
+    // std::cout << "sum of N filtered Data :" << sumVector(N_filteredData) << std::endl;
+    // std::cout << "sum of FIR filtered Data :" << sumVector(FIR_filteredData) << std::endl;
+    // std::cout << "sum of IRR filtered Data :" << sumVector(IRR_filteredData) << std::endl;
     
     return 0;
 }

@@ -10,6 +10,7 @@
 #include "thread.hpp"
 
 using namespace std;
+
 void readWavFile(const std::string& inputFile, std::vector<float>& data, SF_INFO& fileInfo) {
     SNDFILE* inFile = sf_open(inputFile.c_str(), SFM_READ, &fileInfo);
     if (!inFile) {
@@ -46,6 +47,14 @@ void writeWavFile(const std::string& outputFile, const std::vector<float>& data,
 
     sf_close(outFile);
     std::cout << "Successfully wrote " << numFrames << " frames to " << outputFile << std::endl;
+}
+
+float sumVector(const std::vector<float>& values) {
+    float sum = 0.0f;
+    for (float value : values) {
+        sum += value;
+    }
+    return sum;
 }
 
 int main(int argc, char* argv[]){
@@ -103,7 +112,14 @@ int main(int argc, char* argv[]){
     FIR_duration = timer.stop();
 
     timer.start();
-    create_threads(IIR_filter ,audioData, IRR_filteredData, ready_flags);
+
+    // FIRST WAY
+    // create_threads(IIR_filter ,audioData, IRR_filteredData, ready_flags);
+
+    // SECOND WAY
+    ThreadArgs* args = new ThreadArgs(1 ,audioData, IRR_filteredData, ready_flags);
+    IIR_filter(args);
+
     IIR_duration = timer.stop();
 
     timer.start();
@@ -122,6 +138,14 @@ int main(int argc, char* argv[]){
     std::cout << "FIR Filter" << ": " << FIR_duration << " ms" << std::endl;
     std::cout << "IRR Filter" << ": " << IIR_duration << " ms" << std::endl;
     std::cout << "Execution: " << execution_duration << " ms" << std::endl;
+
+    // UNCOMMENT IF YOU WANT TO CHECK THE VALID OUTPUT
     
+    // std::cout << "sum of input Data :" << sumVector(audioData) << std::endl;
+    // std::cout << "sum of BP filtered Data :" << sumVector(BP_filteredData) << std::endl;
+    // std::cout << "sum of N filtered Data :" << sumVector(N_filteredData) << std::endl;
+    // std::cout << "sum of FIR filtered Data :" << sumVector(FIR_filteredData) << std::endl;
+    // std::cout << "sum of IRR filtered Data :" << sumVector(IRR_filteredData) << std::endl;
+
     return 0;
 }
