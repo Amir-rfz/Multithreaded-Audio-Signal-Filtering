@@ -21,10 +21,10 @@
 
 1. Clone this repository:
     ```bash
-    git clone https://github.com/<YourUsername>/Multithreaded-Audio-Signal-Filtering.git
+    git clone https://github.com/Amir-rfz/Multithreaded-Audio-Signal-Filtering.git
     cd Multithreaded-Audio-Signal-Filtering
     ```
-
+    
 2. Install the **libsndfile** library:
     - On Ubuntu:
       ```bash
@@ -35,12 +35,15 @@
       brew install libsndfile
       ```
 
-3. Compile the project:
-    ```bash
-    g++ -std=c++11 -o AudioFilters main.cpp -lsndfile -pthread
-    ```
+3. Go to the desired folder (either `serial` or `parallel`).
 
-4. Run the program:
+
+4. Run the following command to compile the project:
+    ```bash
+    make
+    ```
+    
+5. Run the program:
     ```bash
     ./AudioFilters input.wav output.wav
     ```
@@ -51,9 +54,6 @@
 
 The project compares the **serial** and **multithreaded** implementations of the filtering process. It evaluates the **speedup** gained through multithreading, demonstrating performance improvements in real-time audio processing.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
